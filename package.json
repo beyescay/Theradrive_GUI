@@ -1,0 +1,12 @@
+{
+  "name": "theradrive-gui",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "d3": "3.5.10",
+    "serialport": "2.0.5"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "0.35.2"
+  }
+}
