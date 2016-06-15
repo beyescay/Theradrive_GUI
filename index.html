@@ -25,9 +25,25 @@ svg {
   stroke-width: 5.0px;
 }
 
-#cursor {
+#cursorRed {
   fill: red;
   stroke: red;
+  stroke-width: 3.0px;
+}
+
+#cursorGreen {
+  fill: green;
+  stroke: green;
+  stroke-width: 3.0px;
+}
+
+#rectangle {
+  fill: transparent;
+  stroke: black;
+  stroke-width: 3.0px;
+}
+#rectangleGreen {
+  stroke: black;
   stroke-width: 3.0px;
 }
 
@@ -40,20 +56,26 @@ svg {
     const ipcRenderer = require('electron').ipcRenderer;
     const d3 = require('d3');
 
-    var trajDim = 100;
+    var trajDim = 1000;
+    var trajTipData;
+    var cursorData;
 
     var trajData = new Array(trajDim).fill(0);
 
-    var margin = {top: 30, bottom: 30, left: 50, right: 50},
-        height = 700 - margin.top - margin.bottom,
-        width = 1000 - margin.left - margin.right;
+    var margin = {top: 30, bottom: 30, left: 0, right: 0},
+        height = 720 - margin.top - margin.bottom,
+        width = 1250 - margin.left - margin.right;
 
-    var cursorYHeight = 25;
-    var cursorYBaseline = height + margin.top;
-    var cursorXRadius = 15;
+    var cursorYHeight = 60;
+    var cursorYBaseline = height;
+    var cursorXRadius = 40;
+
+    var rectangleY = 59;
+    var rectangleYBaseline = height;
+    var rectangleX = 2*cursorXRadius;
 
     var xDomain = [-100, 100],
-        tDomain = [0, 5];
+        tDomain = [0, 1000];
 
     var x = d3.scale.linear()
         .domain(xDomain)
@@ -61,7 +83,7 @@ svg {
 
     var t = d3.scale.linear()
         .domain(tDomain)
-        .range([0, height]);
+        .range([height, 0]);
 
     var drawTraj = d3.svg.line()
         .x(function (d) { return margin.left + x(d); })
@@ -69,7 +91,11 @@ svg {
         .interpolate("basis");
 
     var drawTriangle = function(d) {
-        return 'M ' + x(d) + ' ' + cursorYBaseline + ' l ' + -cursorXRadius + ' ' + cursorYHeight + ' l ' + 2*cursorXRadius + ' 0 z'
+        return 'M ' + x(d) + ' ' + cursorYBaseline + 'l' + -cursorXRadius + ' ' + cursorYHeight + ' l ' + 2*cursorXRadius + ' 0 z'
+    }
+
+    var drawRectangle = function(d) {
+        return 'M ' + x(d) + ' ' + rectangleYBaseline + 'h' + -rectangleX + 'v' + rectangleY + 'h' + 2*rectangleX + 'v' + -rectangleY+ ' 0 z'
     }
 
     var taskDisplay = d3.select("#trackingTask").append("svg")
@@ -84,9 +110,15 @@ svg {
         .attr("d", drawTraj);
 
     var cursor = taskDisplay.append("path")
-        .attr("id", "cursor")
-        .datum(300)
+        .attr("id", "cursorGreen")
+        .datum(0)
         .attr("d", drawTriangle);
+
+    var rectangle = taskDisplay.append("path")
+        .attr("id", "rectangle")
+        .datum(0)
+        .attr("d", drawRectangle);
+
 
     ipcRenderer.on('ready-to-draw', function(event, msg) {
         console.log('page loaded!');
@@ -96,14 +128,29 @@ svg {
     ipcRenderer.on('new-traj-data', function(event, data) {
         trajData.shift();
         trajData.push(data);
+        trajTipData = data;
         traj
             .attr("d", drawTraj);
+        rectangle
+            .datum(data)
+            .attr("d",drawRectangle);
     });
     ipcRenderer.on('cursor', function(event, data) {
+        cursorData = "0";
+        if (abs(parseInt(cursorData)-parseInt(trajTipData))>rectangleX){
+              cursor
+                .attr("id","cursorGreen");
+            }
+       else{
+              cursor
+                .attr("id","cursorGreen");
+            }
         cursor
+            .attr("id","cursorGreen")
             .datum(data)
             .attr("d", drawTriangle);
     });
+
   </script>
 </body>
 </html>

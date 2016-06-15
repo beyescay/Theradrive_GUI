@@ -22,26 +22,27 @@ var k = 2;
 var a = 0.5;
 var b =57.32;
 
-var trajDim = 100;
-var update_ms = 10;
+var trajDim = 1;
+var update_ms = 5;
 
 // TODO: fix process error on window close!
 var timerHandle = null;
 
 function update_traj(k, a) {
   if (t<2.5){
-     var val = b*0.004*a * (Math.sin(a*t+2*Math.PI*X1)+Math.sin(2*a*t+2*Math.PI*X2)+Math.sin(3*a*t+2*Math.PI*X3)+Math.sin(4*a*t+2*Math.PI*X4));  
+     var val = b*0.004*a * (Math.sin(a*t+2*Math.PI*X1)+Math.sin(2*a*t+2*Math.PI*X2)+Math.sin(3*a*t+2*Math.PI*X3)+Math.sin(4*a*t+2*Math.PI*X4));
   }
   else{
      var val = b*a * (Math.sin(a*t+2*Math.PI*X1)+Math.sin(2*a*t+2*Math.PI*X2)+Math.sin(3*a*t+2*Math.PI*X3)+Math.sin(4*a*t+2*Math.PI*X4));
   }
-  
+
   t += dt;
   theradrivePort.write(val.toString() + '\n');
   //console.log(val.toString() + '\n');
   if (mainWindow.webContents) {
     mainWindow.webContents.send('new-traj-data', val.toString());
   }
+
   return;
 }
 
