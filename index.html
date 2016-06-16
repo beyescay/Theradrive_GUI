@@ -59,6 +59,8 @@ svg {
     var trajDim = 1000;
     var trajTipData;
     var cursorData;
+    var flag_full = false;
+    var count = 0;
 
     var trajData = new Array(trajDim).fill(0);
 
@@ -126,27 +128,34 @@ svg {
     });
 
     ipcRenderer.on('new-traj-data', function(event, data) {
-        trajData.shift();
+        trajTipData = trajData.shift();
         trajData.push(data);
-        trajTipData = data;
-        traj
-            .attr("d", drawTraj);
-        rectangle
-            .datum(data)
-            .attr("d",drawRectangle);
+
+        if (!flag_full){
+          count = count+1;
+          if (count==trajDim){
+            flag_full = true;
+          }
+        }
+
+        if(flag_full){
+          traj
+              .attr("d", drawTraj);
+          rectangle
+              .datum(trajTipData)
+              .attr("d",drawRectangle);
+          }
     });
     ipcRenderer.on('cursor', function(event, data) {
-        cursorData = "0";
-        if (abs(parseInt(cursorData)-parseInt(trajTipData))>rectangleX){
+        /*if (abs(parseInt(cursorData)-parseInt(trajTipData))>rectangleX){
               cursor
                 .attr("id","cursorGreen");
             }
        else{
               cursor
                 .attr("id","cursorGreen");
-            }
-        cursor
-            .attr("id","cursorGreen")
+            }*/
+       cursor
             .datum(data)
             .attr("d", drawTriangle);
     });

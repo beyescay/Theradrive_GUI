@@ -23,7 +23,7 @@ var a = 0.5;
 var b =57.32;
 
 var trajDim = 1;
-var update_ms = 5;
+var update_ms = 7;
 
 // TODO: fix process error on window close!
 var timerHandle = null;
