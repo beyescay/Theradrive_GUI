@@ -4,7 +4,9 @@ const BrowserWindow = electron.BrowserWindow;  // Module to create native browse
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var theradrivePortName = process.argv[2];
-
+var fs = require('fs');
+var encoderStream = fs.createWriteStream('Current.txt');
+var trajectoryStream = fs.createWriteStream('Desired.txt');
 // Serial port setup
 var theradrivePort = null;
 var theradrivePortOpen = false;
@@ -38,6 +40,7 @@ function update_traj(k, a) {
 
   t += dt;
   theradrivePort.write(val.toString() + '\n');
+  trajectoryStream.write(val + "\n");
   //console.log(val.toString() + '\n');
   if (mainWindow.webContents) {
     mainWindow.webContents.send('new-traj-data', val.toString());
@@ -54,6 +57,7 @@ function showPortOpen() {
 
 function transmitLatestData(data) {
   //console.log(data);
+  encoderStream.write(data + "\n");
   if (mainWindow.webContents) {
     mainWindow.webContents.send('cursor', data);
   }
