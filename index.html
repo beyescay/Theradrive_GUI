@@ -147,14 +147,15 @@ svg {
           }
     });
     ipcRenderer.on('cursor', function(event, data) {
-        /*if (abs(parseInt(cursorData)-parseInt(trajTipData))>rectangleX){
+      cursorData = data;
+       if (Math.abs(parseInt(x(cursorData))-parseInt(x(trajTipData)))>rectangleX){
               cursor
-                .attr("id","cursorGreen");
+                .attr("id","cursorRed");
             }
        else{
               cursor
                 .attr("id","cursorGreen");
-            }*/
+            }
        cursor
             .datum(data)
             .attr("d", drawTriangle);
